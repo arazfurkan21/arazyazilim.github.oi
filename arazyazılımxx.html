@@ -9,7 +9,7 @@ require 'vendor/autoload.php';
     $mail->Username = 'test@hostinger-tutorials.com';
     $mail->Password = 'EMAIL_ACCOUNT_PASSWORD';
     $mail->setFrom('test@hostinger-tutorials.com', 'Mr. Drago');
-    $mail->addAddress('example@gmail.com', 'Receiver Name');
+    $mail->addAddress('arazf025@gmail.com', 'Receiver Name');
     if ($mail->addReplyTo($_POST['email'], $_POST['name'])) {
         $mail->Subject = 'PHPMailer contact form';
         $mail->isHTML(false);
