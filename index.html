@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cihaz, IP ve Konum Bilgileri</title>
+</head>
+<body>
+    <h2>Kullanıcı Cihaz, IP ve Konum Bilgileri</h2>
+
+    <h3>IP Adresiniz:</h3>
+    <p id="ip">Yükleniyor...</p>
+
+    <h3>Cihaz Bilgileri:</h3>
+    <p id="deviceInfo">Yükleniyor...</p>
+
+    <h3>Konum Bilgileriniz:</h3>
+    <p id="location">Yükleniyor...</p>
+
+    <script>
+        // IP Adresini Al
+        function getIP(ipADDR) {
+            document.getElementById("ip").innerText = "IP Adresiniz: " + ipADDR.ip;
+        }
+
+        // Cihaz Bilgilerini Al
+        function getDeviceInfo() {
+            let memory = navigator.deviceMemory || "Bilinmiyor"; // RAM bilgisi
+            let cores = navigator.hardwareConcurrency || "Bilinmiyor"; // İşlemci çekirdek sayısı
+            let onlineStatus = navigator.onLine ? "Bağlı" : "Bağlı Değil"; // İnternet bağlantı durumu
+            let batteryInfo = "Bilgi alınamıyor"; // Batarya bilgisini varsayılan olarak "Bilgi alınamıyor" yapıyoruz
+
+            // Batarya bilgisini al
+            if (navigator.getBattery) {
+                navigator.getBattery().then(battery => {
+                    batteryInfo = `Şarj Durumu: ${(battery.level * 100).toFixed(0)}% | ${battery.charging ? "Şarj Oluyor" : "Şarj Olmuyor"}`;
+                    showDeviceInfo();
+                });
+            } else {
+                showDeviceInfo();
+            }
+
+            function showDeviceInfo() {
+                let info = `
+                    Tarayıcı: ${navigator.userAgent} <br>
+                    Platform: ${navigator.platform} <br>
+                    Dil: ${navigator.language} <br>
+                    Çözünürlük: ${screen.width}x${screen.height} <br>
+                    RAM: ${memory} GB <br>
+                    İşlemci Çekirdek Sayısı: ${cores} <br>
+                    İnternet Durumu: ${onlineStatus} <br>
+                    ${batteryInfo}
+                `;
+                document.getElementById("deviceInfo").innerHTML = info;
+            }
+        }
+
+        // Kullanıcı Konumunu Al
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+            } else {
+                document.getElementById("location").innerText = "Geolocation API desteklenmiyor.";
+            }
+        }
+
+        function showPosition(position) {
+            let latitude = position.coords.latitude;
+            let longitude = position.coords.longitude;
+            document.getElementById("location").innerText = `Enlem: ${latitude}° | Boylam: ${longitude}°`;
+        }
+
+        function showError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    document.getElementById("location").innerText = "Kullanıcı konum erişimini reddetti.";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    document.getElementById("location").innerText = "Konum bilgisi mevcut değil.";
+                    break;
+                case error.TIMEOUT:
+                    document.getElementById("location").innerText = "Konum alırken zaman aşımına uğradı.";
+                    break;
+                default:
+                    document.getElementById("location").innerText = "Bir hata oluştu.";
+                    break;
+            }
+        }
+
+        // IP adresi ve cihaz bilgilerini al
+        getDeviceInfo();
+        getLocation();
+    </script>
+
+    <!-- IP adresini almak için ipify API -->
+    <script src="https://api.ipify.org/?format=jsonp&callback=getIP"></script>
+</body>
+</html>
